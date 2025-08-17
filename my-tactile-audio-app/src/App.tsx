@@ -15,8 +15,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/collect/*" element={<Collect />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/train" element={<Train />} />
+          <Route path="/explore/*" element={<Explore />} />
+          <Route path="/train/*" element={<Train />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

@@ -178,7 +178,7 @@ export default function Module1() {
 
     return (
         <div style={{ padding: 30, fontFamily: "'Noto Sans KR', sans-serif", color: '#222' }}>
-            {/* 시리얼 연결 부분 함수로 만들어서 버튼과 연결해야 한다 */}
+            {/* TODO 1. 시리얼 연결 부분 함수로 만들어서 버튼과 연결해야 한다 */}
             {/* <button
                 style={{
                     fontSize: 26,
@@ -197,8 +197,9 @@ export default function Module1() {
             >
                 {isConnected ? '시리얼 연결 해제' : '시리얼 연결'}
             </button> */}
-            <h1>프로젝트 1</h1>
+            <h1>프로젝트 1(처음부터 다시 시작 버튼 추가)</h1>
             {/* 순서도 부분 */}
+            <h2>과정</h2>
             <div style={{
                 display: 'flex',
                 gap: 16,
@@ -224,6 +225,7 @@ export default function Module1() {
                 {labels.length === 0 && (
                     <p style={{ fontSize: 20, color: 'black' }}>레이블이 없습니다. 새 레이블을 추가하세요.</p>
                 )}
+            
                 {labels.map(label => (
                     <button
                         key={label}

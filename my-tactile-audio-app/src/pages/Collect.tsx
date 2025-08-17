@@ -315,11 +315,17 @@ import React from 'react';
 import { Routes, Route, NavLink, Outlet, Navigate } from 'react-router-dom';
 import Module1 from './../modules/Module1';
 import Module2 from './../modules/Module2';
+import Module3 from './../modules/Module3';
+import Module4 from './../modules/Module4';
+import Module5 from './../modules/Module5';
 
 export default function Collect() {
     const modules = [
         { id: 'module1',label: '프로젝트_1',title : '심장박동 센서로 심장박동 기록 남기기' },
         { id: 'module2',label: '프로젝트_2',title : '조도 센서로 빛 세기 기록 남기기' },
+        { id: 'module3',label: '프로젝트_3',title : '컬러값 찾기' },
+        { id: 'module4',label: '프로젝트_4',title : '빛의 밝기' },
+        { id: 'module5',label: '프로젝트_5',title : '소리의 크기' },
     ];
 
     return (
@@ -346,7 +352,7 @@ export default function Collect() {
                             outline: isActive ? '3.6px solid #153F76' : 'none',  // 골드색 아웃라인 예시
                         })}
                     >
-                        {mod.label}
+                        {mod.title}
                     </NavLink>
                 ))}
             </div>
@@ -358,6 +364,9 @@ export default function Collect() {
                 <Route index element={<Navigate to="module1" replace />} />
                 <Route path="module1" element={<Module1 />} />
                 <Route path="module2" element={<Module2 />} />
+                <Route path="module3" element={<Module3 />} />
+                <Route path="module4" element={<Module4 />} />
+                <Route path="module5" element={<Module5 />} />
             </Routes>
         </div>
     );
