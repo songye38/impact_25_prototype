@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import OrderBox from './../components/OrderBox';
 
 interface SerialPort extends EventTarget {
@@ -25,78 +25,39 @@ export default function Module1() {
     const [completed, setCompleted] = useState([false, false, false, false, false]);
 
 
-    // 순서도 관련 내용
+    // ------------------- 단계 정의 -------------------
     const steps = [
-        { label: '아두이노 코드 복사하기', content: '부품 연결은 선생님의 도움을 받아 진행해주세요. 이 버튼을 클릭해 아두이노 코드를 복사해 아두이노 소프트웨어 창에 복사 붙여넣기해주세요.' },
-        { label: '아두이노에 코드 업로드하기', content: '부품 연결과 코드넣기까지 완료했다면 해당 코드를 아두이노로 업로드 해주세요.' },
+        { label: '아두이노 코드 복사하기', content: '부품 연결은 선생님의 도움을 받아 진행해주세요. 이 버튼을 클릭해 아두이노 코드를 복사해 아두이노 소프트웨어 창에 붙여넣기하세요.' },
+        { label: '아두이노에 코드 업로드하기', content: '부품 연결과 코드 넣기까지 완료했다면 해당 코드를 아두이노로 업로드하세요.' },
         { label: '레이블 입력하기', content: '지금 입력받는 값은 어떤 특성을 가지고 있는지 특성을 하나 정해 입력해주세요.' },
         { label: '시리얼 연결하기', content: '시리얼 연결하기를 눌러 아두이노로부터 값을 입력받으세요.' },
         { label: '시리얼 연결해제하기', content: '시리얼 연결을 안전하게 해제하여 연결을 마무리 지으세요.' },
-        { label: '데이터 저장하기', content: '버튼을 눌러 지금까지 입력 받은 값을 파일로 저장하세요.' },
+        { label: '데이터 다운받기', content: '버튼을 눌러 지금까지 입력 받은 값을 파일로 저장하세요.' },
     ];
 
-    // 가장 마지막으로 완료된 단계 인덱스 찾기 (예: 0부터 시작)
     const lastCompletedStep = completed.lastIndexOf(true);
 
-    // 단계 클릭 핸들러
-    // const handleClick = async (idx: number) => {
-    //     if (idx <= lastCompletedStep + 1) {
-    //         // 1,2단계는 복사 기능 추가
-    //         if (idx === 0) {
-    //             try {
-    //                 const response = await fetch('/materials/connection/heartbeat_connection.txt'); // public/files/parts.txt
-    //                 const text = await response.text();
-    //                 console.log("connection text",text);
-    //                 await navigator.clipboard.writeText(text);
-    //                 alert('부품 연결관계가 클립보드에 복사되었어!');
-    //             } catch (err) {
-    //                 console.error(err);
-    //                 alert('복사 실패 😢');
-    //             }
-    //         } else if (idx === 1) {
-    //             try {
-    //                 const response = await fetch('/materials/code/heartbeat_code.txt'); // public/files/arduino.txt
-    //                 const text = await response.text();
-    //                 console.log("code text",text);
-    //                 await navigator.clipboard.writeText(text);
-    //                 alert('아두이노 코드가 클립보드에 복사되었어!');
-    //             } catch (err) {
-    //                 console.error(err);
-    //                 alert('복사 실패 😢');
-    //             }
-    //         }
-
-    //         // 토글 처리 (공통)
-    //         setCompleted(prev => {
-    //             const copy = [...prev];
-    //             copy[idx] = !copy[idx];
-    //             return copy;
-    //         });
-    //     }
-    // };
-
-    // 초기화 핸들러
+    // ------------------- 초기화 핸들러 -------------------
     const handleReset = async () => {
         try {
-            // 시리얼 연결 해제
             if (isConnected) {
                 await disconnectSerial();
             }
             setIsConnected(false);
-
-            // steps 완료 상태 초기화
             setCompleted(Array(steps.length).fill(false));
-
             alert('모든 단계를 초기화했어. 처음부터 다시 시작할 수 있어!');
         } catch (err) {
             console.error(err);
             alert('초기화 중 오류가 발생했어 😢');
         }
     };
-    // 단계 클릭 핸들러
+
+    // ------------------- 단계 클릭 핸들러 -------------------
     const handleClick = async (idx: number) => {
         if (idx <= lastCompletedStep + 1) {
+
             if (idx === 0) {
+                // 아두이노 코드 복사
                 try {
                     const response = await fetch('/materials/code/heartbeat_code.txt');
                     const text = await response.text();
@@ -106,41 +67,78 @@ export default function Module1() {
                     console.error(err);
                     alert('복사 실패 😢');
                 }
-            } else if (idx === 3) {
+            }
+            else if (idx === 3) {
+                // 시리얼 연결
                 try {
                     if (isConnected) {
                         await disconnectSerial();
                         alert('시리얼 연결이 해제되었어!');
-                        // 성공했을 때만 완료 토글/해제
                         setCompleted(prev => {
                             const copy = [...prev];
-                            copy[idx] = false; // 해제 시 완료도 해제하고 싶다면
+                            copy[idx] = false;
                             return copy;
                         });
                     } else {
-                        await connectSerial(); // ✅ 이제 즉시 반환됨
+                        await connectSerial();
                         alert('시리얼이 연결되었어!');
                         setCompleted(prev => {
                             const copy = [...prev];
-                            copy[idx] = true; // 연결 성공 시 완료 체크
+                            copy[idx] = true;
                             return copy;
                         });
                     }
                 } catch (err: any) {
-                    if (err?.message === 'USER_CANCELLED') {
-                        // 사용자 취소 → 완료 상태 변경하지 않음
-                        console.log('포트 선택 취소');
-                    } else {
+                    if (err?.message !== 'USER_CANCELLED') {
                         console.error(err);
                         alert('시리얼 연결/해제 실패 😢');
                     }
                 }
-                // ✅ 공통 완료 토글 로직이 아래에 있다면, 여기서 return으로 빠져 중복 토글 방지
+                return; // 완료 토글 중복 방지
+            }
+            else if (idx === 5) {
+                // 데이터 다운로드 단계
+                const allLabels = Object.keys(data);
+                if (allLabels.length === 0) {
+                    alert('저장할 데이터가 없어요 😢');
+                    return;
+                }
+
+                const txtRows: string[] = [];
+
+                allLabels.forEach(label => {
+                    const values = data[label] || [];
+                    values.forEach(val => {
+                        txtRows.push(`${val},${label}`);
+                    });
+                });
+
+                const txtContent = txtRows.join('\n');
+
+                const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'data.txt';
+                link.click();
+                URL.revokeObjectURL(url);
+
+                alert('텍스트 파일이 다운로드되었어!');
+
+                setCompleted(prev => {
+                    const copy = [...prev];
+                    copy[idx] = true;
+                    return copy;
+                });
+
                 return;
             }
 
 
-            // ✅ 공통 완료 토글 처리
+
+
+            // 공통 완료 토글
             setCompleted(prev => {
                 const copy = [...prev];
                 copy[idx] = !copy[idx];
@@ -152,13 +150,14 @@ export default function Module1() {
 
 
 
+
     const portRef = useRef<SerialPort | null>(null);
     const readerRef = useRef<ReadableStreamDefaultReader<string> | null>(null);
     const [isConnected, setIsConnected] = useState(false);
     const bufferRef = useRef<string>('');
 
 
-    // 레이블 추가 함수
+    // ------------------- 레이블 추가 함수 -------------------
     function addLabel() {
         const trimmed = newLabel.trim();
         if (trimmed === '') return;
@@ -172,116 +171,27 @@ export default function Module1() {
         setNewLabel('');
     }
 
-
-    // async function connectSerial() {
-    //     try {
-    //         const port = await (navigator as any).serial.requestPort();
-    //         await port.open({ baudRate: 9600 });
-    //         portRef.current = port;
-    //         setIsConnected(true);
-
-    //         const decoder = new TextDecoderStream();
-    //         port.readable!.pipeTo(decoder.writable);
-    //         const reader = decoder.readable.getReader();
-    //         readerRef.current = reader;
-
-    //         while (true) {
-    //             const { value, done } = await reader.read();
-    //             if (done) break;
-
-    //             if (value) {
-    //                 if (value.includes("BUTTON_PRESSED")) {
-    //                     setButtonPressed(true);
-    //                     setTimeout(() => setButtonPressed(false), 3000);
-    //                 }
-
-    //                 bufferRef.current += value;
-    //                 const lines = bufferRef.current.split('\n');
-    //                 bufferRef.current = lines.pop() || '';
-
-    //                 lines.forEach(line => {
-    //                     const num = parseInt(line.trim());
-    //                     if (!isNaN(num)) {
-    //                         setData(prev => {
-    //                             if (!selectedLabel) return prev;
-    //                             return {
-    //                                 ...prev,
-    //                                 [selectedLabel]: [...(prev[selectedLabel] || []), num],
-    //                             };
-    //                         });
-    //                     }
-    //                 });
-    //             }
-    //         }
-    //     } catch (error: any) {
-    //         if (error.name === 'NotFoundError') {
-    //             // 사용자가 포트 선택 창에서 취소 눌렀을 때
-    //             console.log('시리얼 포트 선택이 취소되었어.');
-    //             alert('시리얼 포트 선택을 취소했어.');
-    //         } else {
-    //             console.error('시리얼 연결 중 오류:', error);
-    //             alert('시리얼 연결 중 오류가 발생했어 😢');
-    //         }
-    //         setIsConnected(false);
-    //     }
-    // }
-
-
-    // async function disconnectSerial() {
-    //     setIsConnected(false);
-
-    //     if (readerRef.current) {
-    //         const reader = readerRef.current as any;
-
-    //         try {
-    //             // 잠겨있으면 cancel 가능, 아니면 그냥 releaseLock
-    //             if (reader.locked) {
-    //                 await reader.cancel();
-    //             }
-    //         } catch (e) {
-    //             console.warn('cancel() 실패:', e);
-    //         }
-
-    //         try {
-    //             reader.releaseLock();
-    //         } catch (e) {
-    //             console.warn('releaseLock() 실패:', e);
-    //         }
-
-    //         readerRef.current = null;
-    //     }
-
-    //     if (portRef.current) {
-    //         try {
-    //             await portRef.current.close();
-    //         } catch (e) {
-    //             console.warn('포트 닫기 실패:', e);
-    //         }
-    //         portRef.current = null;
-    //     }
-    // }
-
-
-
-
     const connectingRef = useRef(false);
+    const selectedLabelRef = useRef(selectedLabel);
+    useEffect(() => {
+        selectedLabelRef.current = selectedLabel;
+    }, [selectedLabel]);
 
+    // ------------------- 시리얼 연결 및 데이터 받기 -------------------
     async function connectSerial() {
         if (connectingRef.current) return;
         connectingRef.current = true;
         try {
-            const port = await (navigator as any).serial.requestPort(); // 사용자 제스처 내에서 호출
+            const port = await (navigator as any).serial.requestPort();
             await port.open({ baudRate: 9600 });
             portRef.current = port;
             setIsConnected(true);
 
             const decoder = new TextDecoderStream();
-            // pipeTo는 기다리지 말고 걸어두기만
             port.readable!.pipeTo(decoder.writable).catch(() => { });
             const reader = decoder.readable.getReader();
             readerRef.current = reader;
 
-            // 🔄 읽기 루프는 'fire-and-forget'
             (async function readLoop() {
                 try {
                     while (true) {
@@ -299,12 +209,14 @@ export default function Module1() {
                         bufferRef.current = lines.pop() || '';
                         for (const line of lines) {
                             const num = parseInt(line.trim());
-                            if (!Number.isNaN(num)) {
+                            if (!Number.isNaN(num) && selectedLabelRef.current) {
+                                // 🔑 항상 최신 레이블 참조
                                 setData(prev => {
-                                    if (!selectedLabel) return prev;
+                                    const label = selectedLabelRef.current;
+                                    if (!label) return prev;
                                     return {
                                         ...prev,
-                                        [selectedLabel]: [...(prev[selectedLabel] || []), num],
+                                        [label]: [...(prev[label] || []), num],
                                     };
                                 });
                             }
@@ -315,11 +227,9 @@ export default function Module1() {
                 }
             })();
 
-            // ✅ 여기서 바로 반환되므로 handleClick이 이어서 실행됨
             return;
         } catch (error: any) {
             if (error?.name === 'NotFoundError') {
-                // 사용자 포트 선택 취소 → 호출부에서 구분할 수 있게 throw
                 throw new Error('USER_CANCELLED');
             }
             throw error;
@@ -328,6 +238,7 @@ export default function Module1() {
         }
     }
 
+    // ------------------- 시리얼 연결 해제 -------------------
     async function disconnectSerial() {
         try {
             const reader = readerRef.current;
@@ -345,14 +256,6 @@ export default function Module1() {
             setIsConnected(false);
         }
     }
-
-
-
-
-
-
-
-
 
 
     // 모달 스타일 (중앙 고정 + 배경 어둡게)
@@ -403,6 +306,7 @@ export default function Module1() {
                 {isConnected ? '시리얼 연결 해제' : '시리얼 연결'}
             </button> */}
             <h1>프로젝트 1</h1>
+
             {/* 순서도 부분 */}
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 16 }}>
                 <h2 style={{ margin: 0 }}>과정</h2>
