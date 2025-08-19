@@ -4,7 +4,6 @@ import Train1 from './../trains/Train1';
 import Train2 from './../trains/Train2';
 import Train3 from './../trains/Train3';
 import Train4 from './../trains/Train4';
-import Train5 from './../trains/Train5';
 
 export default function Train() {
     const methods = [
@@ -12,7 +11,6 @@ export default function Train() {
         { id: 'learning2',label: '학습방법_2',title : '회귀' },
         { id: 'learning3',label: '학습방법_3',title : '미정' },
         { id: 'learning4',label: '학습방법_4',title : '미정' },
-        { id: 'learning5',label: '학습방법_5',title : '미정' },
     ];
 
     return (
@@ -53,7 +51,6 @@ export default function Train() {
                 <Route path="learning2" element={<Train2 />} />
                 <Route path="learning3" element={<Train3 />} />
                 <Route path="learning4" element={<Train4 />} />
-                <Route path="learning5" element={<Train5 />} />
             </Routes>
         </div>
     );

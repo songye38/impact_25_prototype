@@ -1,0 +1,13 @@
+const int PULSE_PIN = A0;
+
+void setup() {
+  Serial.begin(9600);
+
+}
+
+void loop() {
+  int sensorValue  = analogRead(PULSE_PIN);
+  Serial.println(sensorValue);
+  delay(10);
+
+}

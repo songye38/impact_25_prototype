@@ -1,0 +1,4 @@
+VCC -> 5v
+GND -> GND
+D0 -> D3
+A0 -> A5

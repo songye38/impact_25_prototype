@@ -36,16 +36,53 @@ export default function Module1() {
     // 가장 마지막으로 완료된 단계 인덱스 찾기 (예: 0부터 시작)
     const lastCompletedStep = completed.lastIndexOf(true);
 
-    const handleClick = (idx: number) => {
-        // 현재 단계가 활성화 가능한 단계인지 체크
+    // const handleClick = (idx: number) => {
+    //     // 현재 단계가 활성화 가능한 단계인지 체크
+    //     if (idx <= lastCompletedStep + 1) {
+    //         setCompleted(prev => {
+    //             const copy = [...prev];
+    //             copy[idx] = !copy[idx]; // 토글
+    //             return copy;
+    //         });
+    //     }
+    // };
+
+    const handleClick = async (idx: number) => {
         if (idx <= lastCompletedStep + 1) {
+            // 1,2단계는 복사 기능 추가
+            if (idx === 0) {
+                try {
+                    const response = await fetch('/materials/connection/heartbeat_connection.txt'); // public/files/parts.txt
+                    const text = await response.text();
+                    console.log("connection text",text);
+                    await navigator.clipboard.writeText(text);
+                    alert('부품 연결관계가 클립보드에 복사되었어!');
+                } catch (err) {
+                    console.error(err);
+                    alert('복사 실패 😢');
+                }
+            } else if (idx === 1) {
+                try {
+                    const response = await fetch('/materials/code/heartbeat_code.txt'); // public/files/arduino.txt
+                    const text = await response.text();
+                    console.log("code text",text);
+                    await navigator.clipboard.writeText(text);
+                    alert('아두이노 코드가 클립보드에 복사되었어!');
+                } catch (err) {
+                    console.error(err);
+                    alert('복사 실패 😢');
+                }
+            }
+
+            // 토글 처리 (공통)
             setCompleted(prev => {
                 const copy = [...prev];
-                copy[idx] = !copy[idx]; // 토글
+                copy[idx] = !copy[idx];
                 return copy;
             });
         }
     };
+
 
 
     const portRef = useRef<SerialPort | null>(null);
@@ -225,7 +262,7 @@ export default function Module1() {
                 {labels.length === 0 && (
                     <p style={{ fontSize: 20, color: 'black' }}>레이블이 없습니다. 새 레이블을 추가하세요.</p>
                 )}
-            
+
                 {labels.map(label => (
                     <button
                         key={label}

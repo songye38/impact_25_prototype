@@ -1,0 +1,8 @@
+VCC -> 5V
+GND -> GND
+OUT -> D2
+S0 -> D3
+S1 -> D4
+S2 -> D5
+D3 -> D6
+LED -> D7

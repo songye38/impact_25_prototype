@@ -1,0 +1,64 @@
+
+#define S0 3
+#define S1 4
+#define S2 5
+#define S3 6
+#define OUT 2
+#define LED 7
+
+
+int scaleColor(int value, int minVal, int maxVal){
+  int v = map(value,minVal,maxVal,0,255);
+  if(v<0) v =0;
+  if(v>255) v = 255;
+  return v;
+}
+
+
+void setup() {
+  pinMode(S0,OUTPUT);
+  pinMode(S1,OUTPUT);
+  pinMode(S2,OUTPUT);
+  pinMode(S3,OUTPUT);
+  pinMode(OUT,INPUT);
+  pinMode(LED,OUTPUT);
+
+  digitalWrite(S0,HIGH);
+  digitalWrite(S1,LOW);
+
+  digitalWrite(LED,HIGH);
+  Serial.begin(9600);
+
+}
+
+void loop() {
+
+  int red,green,blue;
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,LOW);
+  red = pulseIn(OUT,LOW);
+
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,HIGH);
+  green = pulseIn(OUT,LOW);
+
+  digitalWrite(S2,HIGH);
+  digitalWrite(S3,LOW);
+  blue = pulseIn(OUT,LOW);
+
+  int r = scaleColor(red,20,2000);
+  int g = scaleColor(green,20,2000);
+  int b = scaleColor(blue,20,2000);
+
+  char hexColor[8];
+  sprintf(hexColor,"#%02X%02X%02X",r,g,b);
+
+  // Serial.print("R : "); Serial.print(red);
+  // Serial.print("G : "); Serial.print(green);
+  // Serial.print("B : "); Serial.print(blue);
+  Serial.print("HEX : "); 
+  Serial.println(hexColor);
+
+  delay(500);
+
+}

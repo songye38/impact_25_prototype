@@ -1,0 +1,14 @@
+#define AO_PIN A0
+
+void setup() {
+  Serial.begin(9600);
+
+}
+
+void loop() {
+
+  int lightValue = analogRead(AO_PIN);
+  Serial.println(lightValue);
+  delay(200);
+
+}

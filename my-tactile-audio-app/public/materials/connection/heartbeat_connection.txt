@@ -1,0 +1,3 @@
+S -> Signal -> A0
++ -> VCC -> 5v
+- -> GND -> GND

@@ -4,7 +4,6 @@ import Method1 from './../methods/Method1';
 import Method2 from './../methods/Method2';
 import Method3 from './../methods/Method3';
 import Method4 from './../methods/Method4';
-import Method5 from './../methods/Method5';
 
 export default function Explore() {
     const methods = [
@@ -12,7 +11,6 @@ export default function Explore() {
         { id: 'method2',label: '방법_2',title : '통계 / 평균' },
         { id: 'method3',label: '방법_3',title : '변화량' },
         { id: 'method4',label: '방법_4',title : '정규화' },
-        { id: 'method5',label: '방법_5',title : '조합/멀티센서 표현' },
     ];
 
     return (
@@ -53,7 +51,6 @@ export default function Explore() {
                 <Route path="method2" element={<Method2 />} />
                 <Route path="method3" element={<Method3 />} />
                 <Route path="method4" element={<Method4 />} />
-                <Route path="method5" element={<Method5 />} />
             </Routes>
         </div>
     );
