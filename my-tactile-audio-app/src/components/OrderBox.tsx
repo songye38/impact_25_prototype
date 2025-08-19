@@ -6,20 +6,20 @@ type OrderBoxProps = {
   content: string;              // 복사할 내용 or 표시할 내용 (ex: 부품 연결관계)
   completed?: boolean;          // 완료 상태 여부
   onClick?: () => void;         // 버튼 클릭 콜백
+  disabled?: boolean;
+  onHover?: () => void;      // 추가
+  onLeave?: () => void;      // 추가
 };
 
 export default function OrderBox({
-  step,
-  label,
-  content,
-  completed = false,
-  onClick,
-  disabled = false,        // disabled 추가
+  step, label, completed, onClick, disabled, onHover, onLeave,content
 }: OrderBoxProps & { disabled?: boolean }) {
   return (
     <button
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -30,8 +30,8 @@ export default function OrderBox({
         backgroundColor: disabled
           ? '#f0f0f0'
           : completed
-          ? '#e6f4ea'
-          : '#fff',
+            ? '#e6f4ea'
+            : '#fff',
         color: disabled ? '#999' : completed ? '#4CAF50' : '#333',
         fontWeight: '600',
         cursor: disabled ? 'not-allowed' : 'pointer',
@@ -60,14 +60,14 @@ export default function OrderBox({
           marginRight: 12,
           fontWeight: '700',
           userSelect: 'none',
-          fontSize:20,
+          fontSize: 20,
         }}
       >
         {step}
       </div>
 
       {/* 버튼 텍스트 */}
-      <span style={{fontSize:18,flexGrow: 2, textAlign: 'left' }}>{label}</span>
+      <span style={{ fontSize: 18, flexGrow: 2, textAlign: 'left' }}>{label}</span>
 
       {/* 완료 체크 표시 */}
       {completed && (

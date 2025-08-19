@@ -2,15 +2,11 @@ import React from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import Train1 from './../trains/Train1';
 import Train2 from './../trains/Train2';
-import Train3 from './../trains/Train3';
-import Train4 from './../trains/Train4';
 
 export default function Train() {
     const methods = [
         { id: 'learning1',label: '학습방법_1',title : '분류' },
         { id: 'learning2',label: '학습방법_2',title : '회귀' },
-        { id: 'learning3',label: '학습방법_3',title : '미정' },
-        { id: 'learning4',label: '학습방법_4',title : '미정' },
     ];
 
     return (
@@ -49,8 +45,6 @@ export default function Train() {
                 <Route index element={<Navigate to="learning1" replace />} />
                 <Route path="learning1" element={<Train1 />} />
                 <Route path="learning2" element={<Train2 />} />
-                <Route path="learning3" element={<Train3 />} />
-                <Route path="learning4" element={<Train4 />} />
             </Routes>
         </div>
     );
