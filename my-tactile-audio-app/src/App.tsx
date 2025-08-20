@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Main from './pages/Main';
+import Test from './pages/Test';
 import Collect from './pages/Collect';
 import Explore from './pages/Explore';
 import Train from './pages/Train';
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/collect/*" element={<Collect />} />
           <Route path="/explore/*" element={<Explore />} />
           <Route path="/train/*" element={<Train />} />
+          <Route path="/test" element={<Test />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

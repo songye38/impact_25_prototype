@@ -286,25 +286,6 @@ export default function Module1() {
 
     return (
         <div style={{ padding: 30, fontFamily: "'Noto Sans KR', sans-serif", color: '#222' }}>
-            {/* TODO 1. 시리얼 연결 부분 함수로 만들어서 버튼과 연결해야 한다 */}
-            {/* <button
-                style={{
-                    fontSize: 26,
-                    fontWeight: '600',
-                    padding: '12px 24px',
-                    borderRadius: 8,
-                    border: 'none',
-                    cursor: 'pointer',
-                    backgroundColor: isConnected ? '#ff4d4d' : '#4caf50',
-                    color: 'white',
-                    marginBottom: 30,
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
-                    transition: 'background-color 0.3s ease',
-                }}
-                onClick={isConnected ? disconnectSerial : connectSerial}
-            >
-                {isConnected ? '시리얼 연결 해제' : '시리얼 연결'}
-            </button> */}
             <h1>프로젝트 1</h1>
 
             {/* 순서도 부분 */}

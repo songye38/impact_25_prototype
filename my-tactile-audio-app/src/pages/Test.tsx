@@ -38,14 +38,6 @@ type MappingKind =
     | "haptic_pattern"
     | "haptic_repeat";
 
-const options: [MappingKind, string][] = [
-    ["audio_pitch", "소리-높낮이"],
-    ["audio_timbre", "소리-음색"],
-    ["audio_rhythm", "소리-리듬"],
-    ["haptic_strength", "진동-강도"],
-    ["haptic_pattern", "진동-패턴"],
-    ["haptic_repeat", "진동-반복"],
-];
 
 // ---------- Utility helpers ----------
 const mean = (arr: number[]) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0);
@@ -189,9 +181,9 @@ function generateArduinoSketch(opts: {
 }
 
 // ---------- Main Component ----------
-export default function Method1() {
+export default function Test() {
     const [data, setData] = useState<DataPoint[]>([]);
-    const [labelFilter, setLabelFilter] = useState<string[]>([]);
+    const [labelFilter, setLabelFilter] = useState<string>("all");
 
     // 업로드하거나 데이터 추가될 때마다 라벨 목록 갱신
     const userLabels = useMemo(() => {
@@ -199,15 +191,6 @@ export default function Method1() {
     }, [data]);
     const [exploration, setExploration] = useState<ExplorationKind | null>(null);
     const [mapping, setMapping] = useState<MappingKind | null>(null);
-    // 상단에서 상태 선언
-
-    // 오디오 관련
-    const [audioPitch, setAudioPitch] = useState(440); // Hz
-    const [audioVolume, setAudioVolume] = useState(50); // 0~100
-
-    // 햅틱 관련
-    const [hapticStrength, setHapticStrength] = useState(50); // 0~100
-    const [hapticPattern, setHapticPattern] = useState("pulse"); // 기본 패턴
     const [message, setMessage] = useState<string>("");
 
 
@@ -238,11 +221,7 @@ export default function Method1() {
 
     // --- label 기준 필터 ---
     const filtered = useMemo(() => {
-        // "all"이 포함되어 있으면 전체 데이터 반환
-        if (labelFilter.includes("all")) return data;
-
-        // 선택된 라벨 중 하나라도 맞으면 필터링
-        return data.filter(d => labelFilter.includes(d.label));
+        return labelFilter === "all" ? data : data.filter((d) => d.label === labelFilter);
     }, [data, labelFilter]);
 
     const values = useMemo(() => filtered.map((d) => d.value), [filtered]);
@@ -546,7 +525,7 @@ export default function Method1() {
             {/* File upload & label filter */}
             <div className="grid-three">
                 <div className="card">
-                    <label>데이터 업로드 (.txt)</label>
+                    <label>데이터 업로드 (JSON)</label>
                     <input
                         type="file"
                         accept=".txt,text/plain"
@@ -554,36 +533,15 @@ export default function Method1() {
                     />
                 </div>
 
-                {/* 라벨 선택 */}
                 <div className="card">
                     <label>라벨 선택</label>
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+                    <select value={labelFilter} onChange={(e) => setLabelFilter(e.target.value)}>
                         {userLabels.map(label => (
-                            <button
-                                key={label}
-                                onClick={() => {
-                                    if (labelFilter.includes(label)) {
-                                        setLabelFilter(labelFilter.filter(l => l !== label));
-                                    } else {
-                                        setLabelFilter([...labelFilter, label]);
-                                    }
-                                }}
-                                style={{
-                                    padding: '6px 12px',
-                                    borderRadius: 6,
-                                    border: '1px solid #ccc',
-                                    backgroundColor: labelFilter.includes(label) ? '#153F76' : 'white',
-                                    color: labelFilter.includes(label) ? 'white' : '#333',
-                                    cursor: 'pointer',
-                                }}
-                            >
-                                {label}
-                            </button>
+                            <option key={label} value={label}>{label}</option>
                         ))}
-                    </div>
+                    </select>
                 </div>
 
-                {/* 탐색 방법 선택 */}
                 <div className="card">
                     <label>탐색 방법</label>
                     <div className="button-grid">
@@ -606,60 +564,40 @@ export default function Method1() {
                     </div>
                 </div>
             </div>
-            <div className="grid-two">
-                {/* 감각화 방식 선택 */}
-                <div className="card">
-                    <label>감각화 방식</label>
-                    <div className="button-grid">
-                        {options.map(([k, lab]) => (
-                            <button
-                                key={k}
-                                className={mapping === k ? "active" : ""}
-                                onClick={() => setMapping(k)}
-                            >
-                                {lab}
-                            </button>
-                        ))}
-                    </div>
 
-                    {mapping && (
-                        <div className="custom-settings">
-                            {mapping.startsWith('audio') && (
-                                <>
-                                    <label>Pitch</label>
-                                    <input type="range" min={100} max={2000} value={audioPitch} onChange={e => setAudioPitch(+e.target.value)} />
-                                    <label>Volume</label>
-                                    <input type="range" min={0} max={100} value={audioVolume} onChange={e => setAudioVolume(+e.target.value)} />
-                                </>
-                            )}
-                            {mapping.startsWith('haptic') && (
-                                <>
-                                    <label>Strength</label>
-                                    <input type="range" min={0} max={100} value={hapticStrength} onChange={e => setHapticStrength(+e.target.value)} />
-                                    <label>Pattern</label>
-                                    <select value={hapticPattern} onChange={e => setHapticPattern(e.target.value)}>
-                                        <option value="pulse">Pulse</option>
-                                        <option value="buzz">Buzz</option>
-                                        <option value="wave">Wave</option>
-                                    </select>
-                                </>
-                            )}
-                        </div>
-                    )}
+            {/* 감각화 선택 */}
+            <div className="card">
+                <label>감각화 방식</label>
+                <div className="button-grid">
+                    {([
+                        ["audio_pitch", "소리-높낮이"],
+                        ["audio_timbre", "소리-음색"],
+                        ["audio_rhythm", "소리-리듬"],
+                        ["haptic_strength", "진동-강도"],
+                        ["haptic_pattern", "진동-패턴"],
+                        ["haptic_repeat", "진동-반복"],
+                    ] as [MappingKind, string][]).map(([k, lab]) => (
+                        <button
+                            key={k}
+                            className={mapping === k ? "active" : ""}
+                            onClick={() => setMapping(k)}
+                        >
+                            {lab}
+                        </button>
+                    ))}
                 </div>
+            </div>
 
-
-                {/* Summary & Preview */}
-                <div className="card">
-                    <div className="summary-header">
-                        <span>탐색 요약</span>
-                        <span className="subtext">(스크린리더 영역에 자동 낭독)</span>
-                    </div>
-                    <div aria-live="polite">{summary || "선택을 시작하세요."}</div>
-                    <div className="button-row">
-                        <button onClick={preview} disabled={!result || !mapping}>미리듣기 / 미리느끼기</button>
-                        <button onClick={doExport} disabled={!result}>결과 내보내기</button>
-                    </div>
+            {/* Summary & Preview */}
+            <div className="card">
+                <div className="summary-header">
+                    <span>탐색 요약</span>
+                    <span className="subtext">(스크린리더 영역에 자동 낭독)</span>
+                </div>
+                <div aria-live="polite">{summary || "선택을 시작하세요."}</div>
+                <div className="button-row">
+                    <button onClick={preview} disabled={!result || !mapping}>미리듣기 / 미리느끼기</button>
+                    <button onClick={doExport} disabled={!result}>결과 내보내기</button>
                 </div>
             </div>
 
@@ -704,13 +642,12 @@ export default function Method1() {
 
             <style>{`
         .container {
-            // max-width: 1200px;
-            margin: 20px auto;
+            max-width: 960px;
+            margin: 0 auto;
             padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 16px;
-            width : 90vw;
         }
 
         h1 {
@@ -719,11 +656,6 @@ export default function Method1() {
         }
 
         .grid-three {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-        }
-        .grid-two {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 12px;
@@ -849,339 +781,3 @@ function wait(ms: number) {
     return new Promise((res) => setTimeout(res, ms));
 }
 
-
-
-//렌더링을 다르게 하는 코드
-//         <div className="container">
-//             <h1>접근 가능한 데이터 탐색 · 청각/촉각 변환</h1>
-
-//             <div className="main-layout">
-//                 {/* 왼쪽 패널 */}
-//                 <div className="left-panel">
-//                     {/* File upload */}
-//                     <div className="card">
-//                         <label>데이터 업로드 (.txt)</label>
-//                         <input
-//                             type="file"
-//                             accept=".txt,text/plain"
-//                             onChange={handleFileUpload}
-//                         />
-//                     </div>
-
-//                     {/* Label filter */}
-//                     <div className="card">
-//                         <label>라벨 선택</label>
-//                         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
-//                             {userLabels.map(label => (
-//                                 <button
-//                                     key={label}
-//                                     onClick={() => {
-//                                         if (labelFilter.includes(label)) {
-//                                             setLabelFilter(labelFilter.filter(l => l !== label));
-//                                         } else {
-//                                             setLabelFilter([...labelFilter, label]);
-//                                         }
-//                                     }}
-//                                     style={{
-//                                         padding: '6px 12px',
-//                                         borderRadius: 6,
-//                                         border: '1px solid #ccc',
-//                                         backgroundColor: labelFilter.includes(label) ? '#153F76' : 'white',
-//                                         color: labelFilter.includes(label) ? 'white' : '#333',
-//                                         cursor: 'pointer',
-//                                     }}
-//                                 >
-//                                     {label}
-//                                 </button>
-//                             ))}
-//                         </div>
-//                     </div>
-
-//                     {/* Exploration method */}
-//                     <div className="card">
-//                         <label>탐색 방법</label>
-//                         <div className="button-grid">
-//                             {([
-//                                 ["binning", "범주화(3구간)"],
-//                                 ["labelMeans", "라벨 평균"],
-//                                 ["extremes", "최대/최소"],
-//                                 ["delta", "변화량"],
-//                                 ["trend", "추세"],
-//                                 ["frequency", "라벨 빈도"],
-//                             ] as [ExplorationKind, string][]).map(([k, lab]) => (
-//                                 <button
-//                                     key={k}
-//                                     className={exploration === k ? "active" : ""}
-//                                     onClick={() => setExploration(k)}
-//                                 >
-//                                     {lab}
-//                                 </button>
-//                             ))}
-//                         </div>
-//                     </div>
-
-//                     {/* Mapping selection */}
-//                     <div className="card">
-//                         <label>감각화 방식</label>
-//                         <div className="button-grid">
-//                             {options.map(([k, lab]) => (
-//                                 <button
-//                                     key={k}
-//                                     className={mapping === k ? "active" : ""}
-//                                     onClick={() => setMapping(k)}
-//                                 >
-//                                     {lab}
-//                                 </button>
-//                             ))}
-//                         </div>
-
-//                         {mapping && (
-//                             <div className="custom-settings">
-//                                 {mapping.startsWith('audio') && (
-//                                     <>
-//                                         <label>Pitch</label>
-//                                         <input
-//                                             type="range"
-//                                             min={100}
-//                                             max={2000}
-//                                             value={audioPitch}
-//                                             onChange={e => setAudioPitch(+e.target.value)}
-//                                         />
-//                                         <label>Volume</label>
-//                                         <input
-//                                             type="range"
-//                                             min={0}
-//                                             max={100}
-//                                             value={audioVolume}
-//                                             onChange={e => setAudioVolume(+e.target.value)}
-//                                         />
-//                                     </>
-//                                 )}
-//                                 {mapping.startsWith('haptic') && (
-//                                     <>
-//                                         <label>Strength</label>
-//                                         <input
-//                                             type="range"
-//                                             min={0}
-//                                             max={100}
-//                                             value={hapticStrength}
-//                                             onChange={e => setHapticStrength(+e.target.value)}
-//                                         />
-//                                         <label>Pattern</label>
-//                                         <select
-//                                             value={hapticPattern}
-//                                             onChange={e => setHapticPattern(e.target.value)}
-//                                         >
-//                                             <option value="pulse">Pulse</option>
-//                                             <option value="buzz">Buzz</option>
-//                                             <option value="wave">Wave</option>
-//                                         </select>
-//                                     </>
-//                                 )}
-//                             </div>
-//                         )}
-//                     </div>
-
-//                     {/* Summary */}
-//                     <div className="card">
-//                         <div className="summary-header">
-//                             <span>탐색 요약</span>
-//                             <span className="subtext">(스크린리더 영역에 자동 낭독)</span>
-//                         </div>
-//                         <div aria-live="polite">{summary || "선택을 시작하세요."}</div>
-//                         <div className="button-row">
-//                             <button onClick={preview} disabled={!result || !mapping}>미리듣기 / 미리느끼기</button>
-//                             <button onClick={doExport} disabled={!result}>결과 내보내기</button>
-//                         </div>
-//                     </div>
-//                 </div>
-
-//                 {/* 오른쪽 패널 */}
-//                 <div className="right-panel">
-//                     {/* Data table */}
-//                     <div className="card">
-//                         <div className="table-header">
-//                             <span>데이터 ({filtered.length}개)</span>
-//                             <button onClick={() => setData([])}>초기화</button>
-//                         </div>
-//                         <div className="table-wrapper">
-//                             <table>
-//                                 <thead>
-//                                     <tr>
-//                                         <th>value</th>
-//                                         <th>label</th>
-//                                     </tr>
-//                                 </thead>
-//                                 <tbody>
-//                                     {filtered.map((d, i) => (
-//                                         <tr key={i}>
-//                                             <td>{d.value}</td>
-//                                             <td>{d.label}</td>
-//                                         </tr>
-//                                     ))}
-//                                 </tbody>
-//                             </table>
-//                         </div>
-//                     </div>
-
-//                     {/* Exported text */}
-//                     {exportText && (
-//                         <div className="card">
-//                             <div className="table-header">
-//                                 <span>내보내기 결과 (복사해서 사용)</span>
-//                                 <button onClick={() => navigator.clipboard.writeText(exportText)}>클립보드 복사</button>
-//                             </div>
-//                             <pre>{exportText}</pre>
-//                         </div>
-//                     )}
-//                 </div>
-//             </div>
-
-//             <div className="sr-only" aria-live="polite">{message}</div>
-
-//             {/* CSS */}
-//             <style>{`
-//     .container {
-//       max-width: 1200px;
-//       margin: 0 auto;
-//       padding: 16px;
-//       display: flex;
-//       flex-direction: column;
-//       gap: 16px;
-//     }
-
-//     h1 {
-//       font-size: 24px;
-//       font-weight: bold;
-//     }
-
-//     .main-layout {
-//       display: flex;
-//       gap: 16px;
-//     }
-
-//     .left-panel {
-//       flex: 1;
-//       display: flex;
-//       flex-direction: column;
-//       gap: 16px;
-//     }
-
-//     .right-panel {
-//       flex: 1.5;
-//       display: flex;
-//       flex-direction: column;
-//       gap: 16px;
-//     }
-
-//     .card {
-//       background: #fff;
-//       border-radius: 16px;
-//       padding: 16px;
-//       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-//       display: flex;
-//       flex-direction: column;
-//       gap: 8px;
-//     }
-
-//     label {
-//       font-weight: 600;
-//       margin-bottom: 4px;
-//     }
-
-//     input[type="file"], select, input[type="range"] {
-//       padding: 8px;
-//       border-radius: 12px;
-//       border: 1px solid #ccc;
-//       width: 100%;
-//     }
-
-//     .button-grid {
-//       display: grid;
-//       grid-template-columns: repeat(2, 1fr);
-//       gap: 8px;
-//     }
-
-//     button {
-//       padding: 6px 12px;
-//       border-radius: 12px;
-//       border: 1px solid #ccc;
-//       background: #f5f5f5;
-//       cursor: pointer;
-//     }
-
-//     button.active {
-//       background: #000;
-//       color: #fff;
-//       border-color: #000;
-//     }
-
-//     button:disabled {
-//       opacity: 0.4;
-//       cursor: not-allowed;
-//     }
-
-//     .summary-header {
-//       display: flex;
-//       justify-content: space-between;
-//       align-items: center;
-//       font-weight: 600;
-//     }
-
-//     .subtext {
-//       font-size: 12px;
-//       color: #666;
-//     }
-
-//     .button-row {
-//       display: flex;
-//       gap: 8px;
-//       margin-top: 8px;
-//     }
-
-//     .table-header {
-//       display: flex;
-//       justify-content: space-between;
-//       align-items: center;
-//       font-weight: 600;
-//     }
-
-//     .table-wrapper {
-//       max-height: 400px;
-//       overflow: auto;
-//       margin-top: 8px;
-//     }
-
-//     table {
-//       width: 100%;
-//       border-collapse: collapse;
-//       font-size: 14px;
-//     }
-
-//     th, td {
-//       text-align: left;
-//       padding: 6px;
-//     }
-
-//     tr + tr {
-//       border-top: 1px solid #eee;
-//     }
-
-//     pre {
-//       font-size: 12px;
-//       overflow: auto;
-//       white-space: pre-wrap;
-//     }
-
-//     .sr-only {
-//       position: absolute;
-//       width: 1px;
-//       height: 1px;
-//       padding: 0;
-//       margin: -1px;
-//       overflow: hidden;
-//       clip: rect(0,0,0,0);
-//       border: 0;
-//     }
-//   `}</style>
-//         </div>
