@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 
 export default function Header() {
   const navItems = [
-    { label: '메인', path: '/' },
+    { label: '홈', path: '/' },
     { label: '데이터 수집', path: '/collect' },
     { label: '데이터 탐색', path: '/explore' },
     { label: '데이터 학습', path: '/train' },
