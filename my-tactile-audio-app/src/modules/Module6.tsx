@@ -29,7 +29,7 @@ export default function Module6() {
     // ------------------- 단계 정의 -------------------
     const steps = [
         { label: '1단계 데이터 불러오기', completedLabel: '코드 불러오기 완료', content: '선생님 도움을 받아 부품을 연결한 뒤, 버튼을 눌러 아두이노 코드를 복사하고 아두이노 소프트웨어에 붙여넣으세요.' },
-        { label: '2단계 라벨 선택하기', completedLabel: '라벨 선택 완료', content: '부품 연결과 코드 붙여넣기가 끝났다면, 코드를 아두이노에 업로드하세요.' },
+        { label: '2단계 라벨 선택하기', completedLabel: '라벨 선택 완료', content: '특정 라벨을 선택하지 않으면 모든 데이터가 보이고 라벨을 선택하면 선택한 라벨 데이터만 보입니다.' },
         { label: '3단계 탐색 방법 선택하기', completedLabel: '탐색 방법 선택 완료', content: '지금 입력하는 값의 특성을 하나 선택해 입력하세요.' },
         { label: '4단계 감각화 방법 선택하기', completedLabel: '감각화 방법 선택 완료', content: '버튼을 눌러 아두이노와 시리얼 연결을 시작하고 데이터를 받아오세요.' },
         { label: '5단계 아두이노 코드 만들기', completedLabel: '코드 만들기 완료', content: '작업이 끝나면 시리얼 연결을 안전하게 해제하세요.' },
@@ -40,16 +40,19 @@ export default function Module6() {
 
     // --- label 기준 필터 ---
     const filtered = useMemo(() => {
-        // "all"이 포함되어 있으면 전체 데이터 반환
-        if (labelFilter.includes("all")) return data;
-
-        // 선택된 라벨 중 하나라도 맞으면 필터링
-        return data.filter(d => labelFilter.includes(d.label));
+        return labelFilter.length === 0
+            ? data       // 아무것도 선택 안 하면 전체
+            : data.filter(d => labelFilter.includes(d.label));
     }, [data, labelFilter]);
 
-    const values = useMemo(() => filtered.map((d) => d.value), [filtered]);
-    const labels = useMemo(() => Array.from(new Set(data.map((d) => d.label))), [data]);
-    const times = filtered.map((_, i) => i); // 0,1,2,3,... 
+    // 필터된 값만
+    const values = useMemo(() => filtered.map(d => d.value), [filtered]);
+
+    // 모든 라벨
+    const labels = useMemo(() => Array.from(new Set(data.map(d => d.label))), [data]);
+
+    // filtered 요소가 원본 data에서 몇 번째인지
+    const times = useMemo(() => filtered.map(d => data.indexOf(d)), [filtered, data]);
 
 
 
@@ -143,9 +146,8 @@ export default function Module6() {
         reader.onload = (event) => {
             try {
                 const text = event.target?.result as string;
-                // 줄 단위로 나누고, 쉼표로 분리
                 const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
-                const parsed: DataPoint[] = lines.map((line, i) => {
+                const parsed: DataPoint[] = lines.map(line => {
                     const [valueStr, label] = line.split(",");
                     const value = Number(valueStr);
                     if (isNaN(value) || !label) throw new Error("잘못된 형식");
@@ -230,6 +232,11 @@ export default function Module6() {
                         />
 
                         <label htmlFor="fileInput" className="select-file">
+                            <img
+                                src="/icons/file.svg"
+                                alt="선택됨"
+                                style={{ width: 24, height: 24 }}
+                            />
                             파일 선택
                         </label>
 
@@ -243,16 +250,37 @@ export default function Module6() {
                             <p style={{ fontSize: 18, lineHeight: '1.5' }}>{steps[1].content}</p>
                         </div>
                         <div className="label-list">
-
                             {labels.map(label => (
-                                <div key={label} className="label-item">
+                                <button
+                                    key={label}
+                                    onClick={() =>
+                                        setLabelFilter(prev =>
+                                            prev.includes(label)
+                                                ? prev.filter(l => l !== label) // 선택 해제
+                                                : [...prev, label]             // 선택 추가
+                                        )
+                                    }
+                                    className={`label-item ${labelFilter.includes(label) ? "active" : ""}`}
+                                    style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                                >
                                     {label}
-                                </div>
+                                    {labelFilter.includes(label) && (
+                                        <img
+                                            src="/icons/colored-check.svg"
+                                            alt="선택됨"
+                                            style={{ width: 24, height: 24 }}
+                                        />
+                                    )}
+                                </button>
                             ))}
                         </div>
+
+
+
+
                     </div>
 
-                    {/* 3️⃣ 모듈 1 레이블 선택 및 추가 */}
+                    {/* 3️⃣ 레이블 선택 및 추가 */}
                     <div style={{ backgroundColor: '#F5F5F5', padding: '20px', borderRadius: '12px', marginBottom: '12px' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                             <h2 style={{ margin: 0 }}>{steps[2].label}</h2>
@@ -273,12 +301,21 @@ export default function Module6() {
                                         key={k}
                                         className={`label-item ${exploration === k ? "active" : ""}`}
                                         onClick={() => setExploration(k)}
+                                        style={{ display: "flex", alignItems: "center", gap: "8px" }} // 텍스트 + 이미지 가로 배치
                                     >
-                                        {lab}
+                                        <span>{lab}</span>
+                                        {exploration === k && (
+                                            <img
+                                                src="/icons/colored-check.svg"
+                                                alt="선택됨"
+                                                style={{ width: 24, height: 24 }}
+                                            />
+                                        )}
                                     </button>
                                 ))}
                             </div>
                         </div>
+
 
                     </div>
 
@@ -297,11 +334,20 @@ export default function Module6() {
                                         key={k}
                                         onClick={() => setMapping(k)}
                                         className={`label-item ${mapping === k ? "active" : ""}`}
+                                        style={{ display: "flex", alignItems: "center", gap: "8px" }} // 텍스트 + 이미지 가로 배치
                                     >
-                                        {lab}
+                                        <span>{lab}</span>
+                                        {mapping === k && (
+                                            <img
+                                                src="/icons/colored-check.svg"
+                                                alt="선택됨"
+                                                style={{ width: 24, height: 24 }}
+                                            />
+                                        )}
                                     </button>
                                 ))}
                             </div>
+
 
 
                             {mapping && (
@@ -361,17 +407,32 @@ export default function Module6() {
                     </div>
                 </div>
                 {/* 데이터가 들어오는 부분 */}
-                <div style={{ backgroundColor: '#F5F5F5', padding: '20px', borderRadius: '12px', width: '50%' }}>
+                <div
+                    style={{
+                        backgroundColor: '#F5F5F5',
+                        padding: '20px',
+                        borderRadius: '12px',
+                        width: '50%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
                     <div className="table-header">
                         <h2>데이터 총 ({filtered.length}개)</h2>
-                        {/* <button onClick={() => setData([])}>초기화</button> */}
                     </div>
-                    <div className="table-wrapper">
-                        <table>
+                    <div
+                        className="table-wrapper"
+                        style={{
+                            maxHeight: '300px', // 컨테이너 높이 제한
+                            overflowY: 'auto',  // 세로 스크롤
+                            overflowX: 'hidden', // 가로 스크롤 필요 없으면 hidden
+                        }}
+                    >
+                        <table className="my-table">
                             <thead>
                                 <tr>
-                                    <th>value</th>
-                                    <th>label</th>
+                                    <th>값</th>
+                                    <th>레이블</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -385,6 +446,7 @@ export default function Module6() {
                         </table>
                     </div>
                 </div>
+
             </div>
         </div>
     );
