@@ -12,7 +12,6 @@ export default function Module1() {
     const [labels, setLabels] = useState<string[]>([]);
     const [newLabel, setNewLabel] = useState<string>('');
     const [selectedLabel, setSelectedLabel] = useState<string>('');
-    const [hoveredStep, setHoveredStep] = useState<number | null>(null);
 
     const [buttonPressed, setButtonPressed] = useState(false);
 
@@ -364,8 +363,6 @@ export default function Module1() {
                             completed={completed[0]}
                             onClick={() => handleClick(0)}
                             disabled={!(0 <= lastCompletedStep + 1)}
-                            onHover={() => setHoveredStep(0)}
-                            onLeave={() => setHoveredStep(null)}
                         />
                     </div>
                 </div>
@@ -394,8 +391,6 @@ export default function Module1() {
                             completed={completed[1]}
                             onClick={() => handleClick(1)}
                             disabled={!(1 <= lastCompletedStep + 1)}
-                            onHover={() => setHoveredStep(1)}
-                            onLeave={() => setHoveredStep(null)}
                         />
 
                     </div>
@@ -487,8 +482,6 @@ export default function Module1() {
                         completed={completed[2]}                                          // 3단계 완료 상태
                         onClick={() => handleClick(2)}
                         disabled={!(2 <= lastCompletedStep + 1)}                          // 접근 허용
-                        onHover={() => setHoveredStep(2)}
-                        onLeave={() => setHoveredStep(null)}
                     />
                 </div>
 
@@ -560,8 +553,6 @@ export default function Module1() {
                         completed={completed[3]}                                          // 4단계 완료 상태
                         onClick={() => handleClick(3)}
                         disabled={!(3 <= lastCompletedStep + 1)}                          // 접근 허용
-                        onHover={() => setHoveredStep(3)}
-                        onLeave={() => setHoveredStep(null)}
                     />
                 </div>
 
@@ -653,8 +644,6 @@ export default function Module1() {
                             completed={completed[4]}
                             onClick={() => handleClick(4)}
                             disabled={!(4 <= lastCompletedStep + 1)}
-                            onHover={() => setHoveredStep(4)}
-                            onLeave={() => setHoveredStep(null)}
                         />
 
 
@@ -685,8 +674,6 @@ export default function Module1() {
                             completed={completed[5]}
                             onClick={() => handleClick(5)}
                             disabled={!(5 <= lastCompletedStep + 1)}
-                            onHover={() => setHoveredStep(5)}
-                            onLeave={() => setHoveredStep(null)}
                         />
 
                     </div>

@@ -7,19 +7,15 @@ type OrderBoxProps = {
   completed?: boolean;          // 완료 상태 여부
   onClick?: () => void;         // 버튼 클릭 콜백
   disabled?: boolean;
-  onHover?: () => void;      // 추가
-  onLeave?: () => void;      // 추가
 };
 
 export default function OrderBox({
-  step, label, completed, onClick, disabled, onHover, onLeave,content
+  step, label, completed, onClick, disabled,content
 }: OrderBoxProps & { disabled?: boolean }) {
   return (
     <button
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
-      onMouseEnter={onHover}
-      onMouseLeave={onLeave}
       style={{
         display: 'flex',
         alignItems: 'center',

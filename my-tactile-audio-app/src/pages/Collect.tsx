@@ -6,6 +6,7 @@ import Module2 from './../modules/Module2';
 import Module3 from './../modules/Module3';
 import Module4 from './../modules/Module4';
 import Module5 from './../modules/Module5';
+import Module6 from './../modules/Module6';
 
 export default function Collect() {
     const modules = [
@@ -14,6 +15,7 @@ export default function Collect() {
         { id: 'module3', label: '프로젝트 3', title: '컬러 센서로 색상 값 측정하기' },
         { id: 'module4', label: '프로젝트 4', title: '소리 센서로 소리 크기 측정하기' },
         { id: 'module5', label: '프로젝트 5', title: '업데이트 버전 테스트' },
+        { id: 'module6', label: '프로젝트 6', title: '데이터 탐색 테스트' },
     ];
 
     const location = useLocation();
@@ -102,6 +104,7 @@ export default function Collect() {
                     <Route path="module3" element={<Module3 />} />
                     <Route path="module4" element={<Module4 />} />
                     <Route path="module5" element={<Module5 />} />
+                    <Route path="module6" element={<Module6 />} />
                 </Routes>
             </div>
         </div >

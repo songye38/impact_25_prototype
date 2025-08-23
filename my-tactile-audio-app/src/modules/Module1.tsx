@@ -341,8 +341,6 @@ export default function Module1() {
                                 completed={completed[i]}
                                 onClick={() => handleClick(i)}
                                 disabled={!(i <= lastCompletedStep + 1)}
-                                onHover={() => setHoveredStep(i)}
-                                onLeave={() => setHoveredStep(null)}
                             />
                         ))}
                     </div>
