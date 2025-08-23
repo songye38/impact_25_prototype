@@ -27,40 +27,46 @@ export default function Header() {
         paddingBottom: '20px',
       }}
     >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          gap: '7px',
-          alignItems: 'center',      // 세로 중앙
-          justifyContent: 'center',  // 가로 중앙
-        }}
+      <a
+        href="https://impact-25-prototype.vercel.app/"  // 이동할 링크
+        style={{ textDecoration: 'none' }} // 텍스트 밑줄 제거
+        target="_blank" // 새 탭에서 열기
+        rel="noopener noreferrer"
       >
         <div
           style={{
-            color: '#2F6EBF',
-            fontSize: 52,
-            fontWeight: '400',
-            cursor: 'default',
-            userSelect: 'none',
-            fontFamily: "McLaren",
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '7px',
+            alignItems: 'center',      // 세로 중앙
+            justifyContent: 'center',  // 가로 중앙
+            cursor: 'pointer',         // 마우스 포인터 변경
           }}
         >
-          Tecky
+          <div
+            style={{
+              color: '#2F6EBF',
+              fontSize: 52,
+              fontWeight: '400',
+              userSelect: 'none',
+              fontFamily: "McLaren",
+            }}
+          >
+            Tecky
+          </div>
+          <div
+            style={{
+              color: '#045ACB',
+              fontSize: 20,
+              fontWeight: '500',
+              userSelect: 'none',
+              fontFamily: "Outfit",
+            }}
+          >
+            for student
+          </div>
         </div>
-        <div
-          style={{
-            color: '#045ACB',
-            fontSize: 20,
-            fontWeight: '500',
-            cursor: 'default',
-            userSelect: 'none',
-            fontFamily: "Outfit",
-          }}
-        >
-          for student
-        </div>
-      </div>
+      </a>
 
 
       <nav style={{ marginLeft: 'auto', display: 'flex', gap: 24 }}>
