@@ -23,7 +23,7 @@ export default function Main() {
   ];
 
   return (
-    <div style={{ padding: 40, fontFamily: "'Noto Sans KR', sans-serif", color: '#222' }}>
+    <div style={{ padding: 40, fontFamily: "'Noto Sans KR', sans-serif", color: '#222',marginTop:60, }}>
       <h1 style={{ fontSize: 36, marginBottom: 30 }}>메인 페이지</h1>
       <div style={{ display: 'flex', gap: 30, flexWrap: 'wrap' }}>
         {buttons.map(({ label, desc, path }) => (

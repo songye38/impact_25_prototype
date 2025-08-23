@@ -16,21 +16,52 @@ export default function Header() {
         top: 0,
         left: 0,
         width: '96vw',
-        backgroundColor: '#153F76',
-        color: 'white',
+        backgroundColor: 'white',
+        color: 'black',
         display: 'flex',
         alignItems: 'center',
         padding: '24px 30px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+        // boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
         zIndex: 1100,
         fontFamily: "'Pretendard', sans-serif",
+        paddingBottom: '20px',
       }}
     >
       <div
-        style={{ fontSize: 24, fontWeight: '700', cursor: 'default', userSelect: 'none' }}
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: '7px',
+          alignItems: 'center',      // 세로 중앙
+          justifyContent: 'center',  // 가로 중앙
+        }}
       >
-        Nuvo
+        <div
+          style={{
+            color: '#2F6EBF',
+            fontSize: 52,
+            fontWeight: '400',
+            cursor: 'default',
+            userSelect: 'none',
+            fontFamily: "McLaren",
+          }}
+        >
+          Tecky
+        </div>
+        <div
+          style={{
+            color: '#045ACB',
+            fontSize: 20,
+            fontWeight: '500',
+            cursor: 'default',
+            userSelect: 'none',
+            fontFamily: "Outfit",
+          }}
+        >
+          for student
+        </div>
       </div>
+
 
       <nav style={{ marginLeft: 'auto', display: 'flex', gap: 24 }}>
         {navItems.map(({ label, path }) => (
@@ -38,11 +69,11 @@ export default function Header() {
             key={path}
             to={path}
             style={({ isActive }) => ({
-              color: 'white',
+              color: 'black',
               textDecoration: 'none',
               fontSize: 18,
               fontWeight: isActive ? '700' : '500',
-              borderBottom: isActive ? '2px solid #fff' : 'none',
+              borderBottom: isActive ? '2px solid black' : 'none',
               paddingBottom: 4,
               transition: 'color 0.2s ease',
             })}
@@ -51,6 +82,6 @@ export default function Header() {
           </NavLink>
         ))}
       </nav>
-    </header>
+    </header >
   );
 }

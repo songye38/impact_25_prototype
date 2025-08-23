@@ -6,7 +6,6 @@ import Module2 from './../modules/Module2';
 import Module3 from './../modules/Module3';
 import Module4 from './../modules/Module4';
 import Module5 from './../modules/Module5';
-import Module6 from './../modules/Module6';
 
 export default function Collect() {
     const modules = [
@@ -15,7 +14,6 @@ export default function Collect() {
         { id: 'module3', label: '프로젝트 3', title: '컬러 센서로 색상 값 측정하기' },
         { id: 'module4', label: '프로젝트 4', title: '소리 센서로 소리 크기 측정하기' },
         { id: 'module5', label: '프로젝트 5', title: '업데이트 버전 테스트' },
-        { id: 'module6', label: '프로젝트 6', title: '데이터 탐색 테스트' },
     ];
 
     const location = useLocation();
@@ -23,6 +21,7 @@ export default function Collect() {
         modules.find(m => location.pathname.startsWith(`/collect/${m.id}`))?.id || 'module1';
 
     return (
+
         <div>
             {/* 접근성 고려: 탭 네비게이션 */}
             <nav
@@ -48,6 +47,7 @@ export default function Collect() {
                             aria-controls={`panel-${mod.id}`}
                             aria-label={`${mod.label}, ${mod.title}${isActive ? ' (선택됨)' : ''}`}
                             style={{
+                                marginTop:60,
                                 minWidth: 200,
                                 padding: '16px 20px',
                                 borderRadius: 10,
@@ -56,7 +56,7 @@ export default function Collect() {
                                 justifyContent: 'center',
                                 alignItems: 'flex-start',
                                 backgroundColor: isActive ? '#e3f2fd' : '#f8f8f8',
-                                border: isActive ? '2px solid #153F76' : '1px solid #ccc',
+                                border: isActive ? '2.8px solid #153F76' : '1px solid #ccc',
                                 fontSize: 18,
                                 fontWeight: 500,
                                 color: '#111',
@@ -91,7 +91,7 @@ export default function Collect() {
                 style={{
                     padding: 20,
                     marginTop: 12,
-                    border: '1px solid #e5e5e5',
+                    // border: '1px solid #e5e5e5',
                     borderRadius: 12,
                     backgroundColor: 'white',
                     minHeight: 400,
@@ -104,7 +104,6 @@ export default function Collect() {
                     <Route path="module3" element={<Module3 />} />
                     <Route path="module4" element={<Module4 />} />
                     <Route path="module5" element={<Module5 />} />
-                    <Route path="module6" element={<Module6 />} />
                 </Routes>
             </div>
         </div >

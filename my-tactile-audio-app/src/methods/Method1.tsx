@@ -169,7 +169,7 @@ export default function Method1() {
 
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', width: '100%', flexDirection: 'column', gap: '20px', padding: 30, boxSizing: 'border-box',overflowY: "hidden" }}>
+        <div style={{ display: 'flex', justifyContent: 'center', width: '100%', flexDirection: 'column', gap: '20px', padding: 30, boxSizing: 'border-box',overflowY: "hidden",marginTop:60, }}>
             <h1>데이터 탐색</h1>
             <div style={{ display: 'flex', justifyContent: 'center', width: '100%', flexDirection: 'row', gap: '20px',height: "500px" }}>
                 {/* 왼쪽 - 설정 편 */}
