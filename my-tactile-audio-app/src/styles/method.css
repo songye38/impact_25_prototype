@@ -1,0 +1,39 @@
+
+
+.label-list {
+    display: flex;                  
+    flex-wrap: wrap;     
+    align-items: center;        
+   
+}
+
+
+.label-item {
+    font-size: 20px;
+    margin-right: 12px;
+    margin-bottom: 12px;
+    padding: 8px 16px;              
+    border-radius: 8px;
+    border: 2px solid #ccc;        
+    background-color:white;         
+    display: flex;                  
+    align-items: center;
+    gap: 8px;                       
+}
+
+
+.select-file {
+  font-size: 20px;
+  border: 2px solid black;
+  padding: 8px 16px;
+  color: black;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-block;
+  background-color: #fff; /* 선택 버튼 배경 */
+  text-align: center;
+}
+
+.select-file:hover {
+  background-color: #f0f0f0; /* 호버 시 배경 */
+}

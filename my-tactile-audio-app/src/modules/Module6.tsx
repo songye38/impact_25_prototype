@@ -5,6 +5,7 @@ import { binning, countBy, mean, minMax, slope } from "../utils/math";
 import { Tone, tone } from "../audio/Tone";
 import { generateArduinoSketch } from "../arduino/generator"
 import OrderBox from "../components/OrderBox";
+import "./../styles/method.css";
 
 
 export default function Module6() {
@@ -12,8 +13,17 @@ export default function Module6() {
     const [selectedLabel, setSelectedLabel] = useState<string>('');
     const [data, setData] = useState<DataPoint[]>([]);
     const [labelFilter, setLabelFilter] = useState<string[]>([]);
-
+    const [exploration, setExploration] = useState<ExplorationKind | null>(null);
+    const [mapping, setMapping] = useState<MappingKind | null>(null);
     const [completed, setCompleted] = useState([false, false, false, false, false]);
+    // 오디오 관련
+    const [audioPitch, setAudioPitch] = useState(440); // Hz
+    const [audioVolume, setAudioVolume] = useState(50); // 0~100
+
+    // 햅틱 관련
+    const [hapticStrength, setHapticStrength] = useState(50); // 0~100
+    const [hapticPattern, setHapticPattern] = useState("pulse"); // 기본 패턴
+    const [message, setMessage] = useState<string>("");
 
 
     // ------------------- 단계 정의 -------------------
@@ -68,19 +78,30 @@ export default function Module6() {
     const handleClick = async (idx: number) => {
         if (idx <= lastCompletedStep + 1) {
 
+
             if (idx === 0) {
+                // 1단계: 데이터 불러오기
+                <input
+                    type="file"
+                    accept=".txt,text/plain"
+                    onChange={handleFileUpload}
+                />
             }
             else if (idx === 1) {
-                // 3번 과정과 관련해서 해야할일은 여기에
+                // 2단계: 라벨 선택하기
+
             }
             else if (idx === 2) {
-                // 3번 과정과 관련해서 해야할일은 여기에
+                // 3단계: 탐색 방법 선택하기
+
             }
             else if (idx === 3) {
-                // 3번 과정과 관련해서 해야할일은 여기에
+                // 4단계: 감각화 방법 선택하기
+
             }
             else if (idx === 4) {
-                // 3번 과정과 관련해서 해야할일은 여기에
+                // 5단계: 아두이노 코드 만들기
+
             }
 
             // 공통 완료 토글
@@ -142,7 +163,7 @@ export default function Module6() {
 
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', width: '100%', flexDirection: 'column', gap: '20px',padding:30, boxSizing: 'border-box' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', width: '100%', flexDirection: 'column', gap: '20px', padding: 30, boxSizing: 'border-box' }}>
             <h1>데이터 탐색</h1>
             <div style={{ display: 'flex', justifyContent: 'center', width: '100%', flexDirection: 'row', gap: '20px' }}>
                 {/* 순서도가 있는 부분 0 ~ 5단계까지 있음 */}
@@ -195,27 +216,24 @@ export default function Module6() {
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                             <h2 style={{ margin: 0 }}>{steps[0].label}</h2>
                             <p style={{ fontSize: 18, lineHeight: '1.5' }}>{steps[0].content}</p>
+                        </div>
+                        {/* <input
+                            type="file"
+                            accept=".txt,text/plain"
+                            onChange={handleFileUpload}
+                        /> */}
+                        <input
+                            type="file"
+                            id="fileInput"
+                            style={{ display: "none" }}
+                            onChange={handleFileUpload}
+                        />
 
-                        </div>
-                        <div>
-                            {/* 버튼 영역 */}
-                            <div style={{
-                                display: 'flex',
-                                gap: 16,
-                                overflowX: 'auto',
-                                padding: 12,
-                                flexWrap: 'nowrap'
-                            }}>
-                                <OrderBox
-                                    step={1}
-                                    label={completed[0] ? steps[0].completedLabel : steps[0].label} // steps[0] 사용
-                                    content={steps[0].content}
-                                    completed={completed[0]}
-                                    onClick={() => handleClick(0)}
-                                    disabled={!(0 <= lastCompletedStep + 1)}
-                                />
-                            </div>
-                        </div>
+                        <label htmlFor="fileInput" className="select-file">
+                            파일 선택
+                        </label>
+
+
                     </div>
 
                     {/*  2️⃣ 과정(Process) 단계 */}
@@ -223,27 +241,14 @@ export default function Module6() {
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                             <h2 style={{ margin: 0 }}>{steps[1].label}</h2>
                             <p style={{ fontSize: 18, lineHeight: '1.5' }}>{steps[1].content}</p>
-
                         </div>
-                        <div>
-                            {/* 버튼 영역 */}
-                            <div style={{
-                                display: 'flex',
-                                gap: 16,
-                                overflowX: 'auto',
-                                padding: 12,
-                                flexWrap: 'nowrap'
-                            }}>
-                                <OrderBox
-                                    step={2}
-                                    label={completed[1] ? steps[1].completedLabel : steps[1].label} // steps[1] 사용
-                                    content={steps[1].content}
-                                    completed={completed[1]}
-                                    onClick={() => handleClick(1)}
-                                    disabled={!(1 <= lastCompletedStep + 1)}
-                                />
+                        <div className="label-list">
 
-                            </div>
+                            {labels.map(label => (
+                                <div key={label} className="label-item">
+                                    {label}
+                                </div>
+                            ))}
                         </div>
                     </div>
 
@@ -253,86 +258,26 @@ export default function Module6() {
                             <h2 style={{ margin: 0 }}>{steps[2].label}</h2>
                             <p style={{ fontSize: 18, lineHeight: '1.5' }}>{steps[2].content}</p>
                         </div>
-                        <div style={{ marginBottom: 30 }}>
-                            <input
-                                type="text"
-                                placeholder="새 레이블 입력"
-                                value={newLabel}
-                                onChange={e => setNewLabel(e.target.value)}
-                                style={{
-                                    fontSize: 20,
-                                    padding: '10px 14px',
-                                    borderRadius: 8,
-                                    border: '2px solid #153F76',
-                                    width: '250px',
-                                    outline: 'none',
-                                }}
-                            // onKeyDown={e => {
-                            //     if (e.key === 'Enter') {
-                            //         addLabel();
-                            //     }
-                            // }}
-                            />
-                            <button
-                                // onClick={addLabel}
-                                style={{
-                                    fontSize: 20,
-                                    marginLeft: 14,
-                                    padding: '10px 20px',
-                                    borderRadius: 8,
-                                    backgroundColor: '#153F76',
-                                    color: 'white',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    transition: 'background-color 0.3s ease',
-                                }}
-                            >
-                                추가
-                            </button>
-
-                        </div>
-
-                        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', marginBottom: '30px' }}>
-                            {labels.length === 0 && (
-                                <p style={{ fontSize: 18, color: 'black' }}>레이블이 없습니다. 새 레이블을 추가하세요.</p>
-                            )}
-
-                            {labels.map(label => (
-                                <div
-                                    key={label}
-                                    style={{
-                                        fontSize: 20,
-                                        marginRight: 12,
-                                        marginBottom: 12,
-                                        padding: '8px 16px',
-                                        borderRadius: 8,
-                                        border: '2px solid #ccc',
-                                        backgroundColor: 'white',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                    }}
-                                >
-                                    {label}
-                                </div>
-                            ))}
-                        </div>
-                        {/* 버튼 영역 */}
-                        <div style={{
-                            display: 'flex',
-                            gap: 16,
-                            overflowX: 'auto',
-                            padding: 12,
-                            flexWrap: 'nowrap'
-                        }}>
-                            <OrderBox
-                                step={3} // 화면에 표시될 단계 번호
-                                label={completed[2] ? steps[2].completedLabel : steps[2].label} // steps[2] 사용
-                                content={steps[2].content}                                        // 3단계 내용
-                                completed={completed[2]}                                          // 3단계 완료 상태
-                                onClick={() => handleClick(2)}
-                                disabled={!(2 <= lastCompletedStep + 1)}                          // 접근 허용
-                            />
+                        {/* 탐색 방법 선택 */}
+                        <div className="card">
+                            <div className="label-list">
+                                {([
+                                    ["binning", "범주화(3구간)"],
+                                    ["labelMeans", "라벨 평균"],
+                                    ["extremes", "최대/최소"],
+                                    ["delta", "변화량"],
+                                    ["trend", "추세"],
+                                    ["frequency", "라벨 빈도"],
+                                ] as [ExplorationKind, string][]).map(([k, lab]) => (
+                                    <button
+                                        key={k}
+                                        className={`label-item ${exploration === k ? "active" : ""}`}
+                                        onClick={() => setExploration(k)}
+                                    >
+                                        {lab}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
 
                     </div>
@@ -344,104 +289,45 @@ export default function Module6() {
                             <h2 style={{ margin: 0 }}>{steps[3].label}</h2>
                             <p style={{ fontSize: 18, lineHeight: '1.5' }}>{steps[3].content}</p>
                         </div>
+                        {/* 감각화 방식 선택 */}
+                        <div className="card">
+                            <div className="label-list">
+                                {options.map(([k, lab]) => (
+                                    <button
+                                        key={k}
+                                        onClick={() => setMapping(k)}
+                                        className={`label-item ${mapping === k ? "active" : ""}`}
+                                    >
+                                        {lab}
+                                    </button>
+                                ))}
+                            </div>
 
-                        {/* 레이블 선택 버튼 */}
-                        <div style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            alignItems: 'center',
-                            marginBottom: '20px',
-                        }}>
-                            {labels.length === 0 && (
-                                <p style={{ fontSize: 18, color: 'black' }}>레이블이 없습니다. 3단계에서 레이블을 추가하세요.</p>
-                            )}
-                            {labels.map(label => (
-                                <button
-                                    key={label}
-                                    style={{
-                                        fontSize: 20,
-                                        marginRight: 12,
-                                        marginBottom: 12,
-                                        padding: '8px 16px',
-                                        borderRadius: 8,
-                                        border: selectedLabel === label ? '2.5px solid #153F76' : '2px solid #ccc',
-                                        backgroundColor: selectedLabel === label ? '#e3f2fd' : 'white',
-                                        cursor: 'pointer',
-                                        fontWeight: selectedLabel === label ? '700' : '500',
-                                        color: '#333',
-                                        transition: 'all 0.2s ease',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                    }}
-                                    onClick={() => setSelectedLabel(label)}
-                                >
-                                    {label}
-                                    {selectedLabel === label && (
-                                        <img
-                                            src="/icons/colored-check.svg" // 체크 이미지 경로
-                                            alt="선택됨"
-                                            style={{ width: 20, height: 20 }}
-                                        />
+
+                            {mapping && (
+                                <div className="custom-settings">
+                                    {mapping.startsWith('audio') && (
+                                        <>
+                                            <label>Pitch</label>
+                                            <input type="range" min={100} max={2000} value={audioPitch} onChange={e => setAudioPitch(+e.target.value)} />
+                                            <label>Volume</label>
+                                            <input type="range" min={0} max={100} value={audioVolume} onChange={e => setAudioVolume(+e.target.value)} />
+                                        </>
                                     )}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* 버튼 영역 */}
-                        <div style={{
-                            display: 'flex',
-                            gap: 16,
-                            overflowX: 'auto',
-                            padding: 12,
-                            flexWrap: 'nowrap'
-                        }}>
-                            <OrderBox
-                                step={4} // 화면에 표시될 단계 번호
-                                label={completed[3] ? steps[3].completedLabel : steps[3].label} // steps[3] 사용
-                                content={steps[3].content}                                        // 4단계 내용
-                                completed={completed[3]}                                          // 4단계 완료 상태
-                                onClick={() => handleClick(3)}
-                                disabled={!(3 <= lastCompletedStep + 1)}                          // 접근 허용
-                            />
-                        </div>
-
-
-
-
-
-                        <h3 style={{ marginBottom: 10 }}>
-                            실시간 센서 데이터 {selectedLabel ? `(${selectedLabel})` : ''}
-                        </h3>
-                        <div
-                            style={{
-                                maxHeight: 220,
-                                overflowY: 'auto',
-                                border: '2px solid #153F76',
-                                borderRadius: 8,
-                                padding: 15,
-                                fontFamily: 'monospace',
-                                backgroundColor: '#f9fafd',
-                            }}
-                        >
-                            {/* {data[selectedLabel]?.map((val, i) => (
-                                <div
-                                    style={{
-                                        color: '#333',
-                                        fontSize: 26,
-                                        padding: '4px 0',
-                                        borderBottom: '1px solid #eee',
-                                    }}
-                                    key={i}
-                                >
-                                    {val}
+                                    {mapping.startsWith('haptic') && (
+                                        <>
+                                            <label>Strength</label>
+                                            <input type="range" min={0} max={100} value={hapticStrength} onChange={e => setHapticStrength(+e.target.value)} />
+                                            <label>Pattern</label>
+                                            <select value={hapticPattern} onChange={e => setHapticPattern(e.target.value)}>
+                                                <option value="pulse">Pulse</option>
+                                                <option value="buzz">Buzz</option>
+                                                <option value="wave">Wave</option>
+                                            </select>
+                                        </>
+                                    )}
                                 </div>
-                            ))} */}
-                            {/* {!data[selectedLabel]?.length && (
-                                <p style={{ fontSize: 24, color: 'black', fontWeight: 700, textAlign: 'center', marginTop: 20 }}>
-                                    아직은 연결되지 않아 데이터가 없습니다.
-                                </p>
-                            )} */}
+                            )}
                         </div>
                     </div>
 
@@ -475,31 +361,31 @@ export default function Module6() {
                     </div>
                 </div>
                 {/* 데이터가 들어오는 부분 */}
-                    <div style={{ backgroundColor: '#F5F5F5', padding: '20px', borderRadius: '12px', width: '50%' }}>
-                        <div className="table-header">
-                            <h2>데이터 총 ({filtered.length}개)</h2>
-                            {/* <button onClick={() => setData([])}>초기화</button> */}
-                        </div>
-                        <div className="table-wrapper">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>value</th>
-                                        <th>label</th>
+                <div style={{ backgroundColor: '#F5F5F5', padding: '20px', borderRadius: '12px', width: '50%' }}>
+                    <div className="table-header">
+                        <h2>데이터 총 ({filtered.length}개)</h2>
+                        {/* <button onClick={() => setData([])}>초기화</button> */}
+                    </div>
+                    <div className="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>value</th>
+                                    <th>label</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filtered.map((d, i) => (
+                                    <tr key={i}>
+                                        <td>{d.value}</td>
+                                        <td>{d.label}</td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {filtered.map((d, i) => (
-                                        <tr key={i}>
-                                            <td>{d.value}</td>
-                                            <td>{d.label}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
+        </div>
     );
 }
